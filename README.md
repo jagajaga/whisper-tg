@@ -47,7 +47,6 @@ A Telegram bot for transcribing audio files using WhisperX (with speaker diariza
      - `BOT_TOKEN`: Telegram bot token
      - `RUNPOD_API_KEY`, `RUNPOD_POD_ID`, `RUNPOD_ENDPOINT_URL`: RunPod credentials and endpoint
      - `BOT_PASSWORD`: Password for bot authentication (default: 'thisisthebestbot')
-4. **(Optional) Add `config.py` to `.gitignore`** to avoid leaking secrets.
 
 ---
 
