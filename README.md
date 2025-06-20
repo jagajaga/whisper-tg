@@ -78,9 +78,6 @@ The bot will connect to Telegram and wait for messages.
 
 ### 2. Authenticate
 - The first time you message the bot, you must enter the password set in `config.py` (`BOT_PASSWORD`).
-  ```
-  password
-  ```
 - After authentication, you can use the bot's features.
 
 ### 3. Add a Transcription Task
