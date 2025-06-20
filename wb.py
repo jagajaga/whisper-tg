@@ -64,6 +64,14 @@ class RunPodAPI:
         headers = {"Authorization": f"Bearer {self.api_key}"}
         resp = requests.post(url, headers=headers)
         print(f"Starting pod {self.pod_id}, response: {resp.status_code} {resp.text}")
+        if resp.status_code == 500:
+            data = resp.json()
+            if "error" in data and "not enough free GPUs" in data["error"]:
+                log("Pod start error: not enough free GPUs available.")
+                time.sleep(5)
+                log("Retrying pod start...")
+                return self.start_pod()
+            return data.get("status", None)
         if resp.status_code == 200:
             data = resp.json()
             return data.get("status", None)
@@ -269,22 +277,10 @@ async def main():
                             status = runpod_api.get_pod_status()
                             if status != "RUNNING":
                                 log(f"Pod not running (status={status}), resuming...")
-                                max_retries = 40
-                                for attempt in range(max_retries):
-                                    start_response = runpod_api.start_pod()
-                                    
-                                    if start_response is None:
-                                        log("Pod start returned None, retrying...")
-                                    elif isinstance(start_response, str) and "not enough free GPUs" in start_response:
-                                        log(f"Pod start error: not enough free GPUs (attempt {attempt+1}/{max_retries})")
-                                        time.sleep(10)
-                                        continue
-                                    
-                                    for _ in range(60):
-                                        time.sleep(5)
-                                        status = runpod_api.get_pod_status()
-                                        if status == "RUNNING":
-                                            break
+                                runpod_api.start_pod()
+                                for _ in range(60):
+                                    time.sleep(5)
+                                    status = runpod_api.get_pod_status()
                                     if status == "RUNNING":
                                         break
                                 if status != "RUNNING":
